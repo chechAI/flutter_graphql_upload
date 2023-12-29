@@ -185,6 +185,52 @@ class _MyHomePageState extends State<MyHomePage> {
                     onPressed: () => selectImage(),
                   ),
                   // Mutation Widget Here
+                  if (_image != null)
+                    Mutation(
+                      options: MutationOptions(
+                        document: gql(createAssets),
+                        onCompleted: (d) {
+                          print(d);
+                          setState(() {
+                            _uploadInProgress = false;
+                          });
+                        },
+                        update: (cache, results) {
+                          var message = results!.hasException
+                              ? 'error'
+                              // : "Image was uploaded successfully!";
+                              : results.data;
+                          print('message: $message');
+                          // final snackBar = SnackBar(content: Text(message));
+                          // Scaffold.of(context).showBottomSheet(snackBar);
+                        },
+                      ),
+                      builder: (RunMutation? runMutation, QueryResult? result) {
+                        return ElevatedButton(
+                          child: _isLoadingInProgress(),
+                          onPressed: () async {
+                            setState(() {
+                              _uploadInProgress = true;
+                            });
+                            _uploadImage(context);
+                            // var byteData = _image!.readAsBytesSync();
+
+                            // var multipartFile = MultipartFile.fromBytes(
+                            //   'photo',
+                            //   byteData,
+                            //   filename: '${DateTime.now().second}.jpg',
+                            //   contentType: MediaType("image", "jpg"),
+                            // );
+
+                            // runMutation!(<String, dynamic>{
+                            //   "input": [multipartFile],
+                            // });
+                          },
+                        );
+                      },
+                      // onCompleted: (d) {},
+                      // update: (cache, results) {},
+                    ),
                 ],
               ),
             )
